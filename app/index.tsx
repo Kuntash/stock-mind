@@ -1,9 +1,17 @@
 import { useFonts } from 'expo-font';
-import { Redirect, SplashScreen } from 'expo-router';
-import { useCallback } from 'react';
-import { View } from 'react-native';
+import { Redirect } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function Page() {
+  /* Font related */
   const [fontsLoaded, fontError] = useFonts({
     poppinsLight: require('../assets/fonts/Poppins/Poppins-Light.ttf'),
     poppinsRegular: require('../assets/fonts/Poppins/Poppins-Regular.ttf'),

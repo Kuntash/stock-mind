@@ -1,7 +1,5 @@
 import { Tabs } from 'expo-router';
 import { TabBar } from '../../components/organisms/TabBar';
-import Octicons from 'react-native-vector-icons/Octicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function TabsLayout() {
@@ -28,9 +26,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="scan"
+        name="add-grocery"
         options={{
-          title: 'Scan',
+          title: 'Add grocery',
           tabBarIcon: ({ color, focused }) => {
             return (
               <Ionicons
