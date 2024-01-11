@@ -46,3 +46,25 @@ export const getUserPreferences = async () => {
     return null;
   }
 };
+
+export const updateUserPreferences = async (userPreference: UserPreference) => {
+  try {
+    await AsyncStorage.setItem(
+      USER_PREFERENCES,
+      JSON.stringify(userPreference)
+    );
+
+    const jsonValue = await AsyncStorage.getItem(USER_PREFERENCES);
+    const data =
+      jsonValue != null ? (JSON.parse(jsonValue) as UserPreference) : null;
+    console.log(
+      '🚀 ~ file: storage.ts:59 ~ updateUserPreferences ~ data:',
+      data
+    );
+  } catch (error) {
+    console.log(
+      '🚀 ~ file: storage.ts:65 ~ updateUserPreferences ~ error:',
+      error
+    );
+  }
+};

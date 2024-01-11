@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { View } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import { useMemo } from 'react';
-import { router } from 'expo-router';
 
 export const GroceryItem = (props: GroceryItemProps) => {
   const { grocery } = props;

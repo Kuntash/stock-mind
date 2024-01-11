@@ -10,7 +10,7 @@ export const Toast = (props: ToastProps) => {
 
   return (
     <MotiView
-      from={{ opacity: 0, scale: 0, bottom: 10, right: 0 }}
+      from={{ opacity: 0, scale: 0, bottom: 10, right: 10 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'timing' }}
       style={{
