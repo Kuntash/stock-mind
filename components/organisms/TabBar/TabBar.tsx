@@ -1,15 +1,13 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { clsx } from 'clsx';
 import React from 'react';
 
 export const TabBar = (props: BottomTabBarProps) => {
-  const { descriptors, navigation, state } = props;
+  const { descriptors, navigation, state, insets } = props;
   return (
-    <View className="flex-row p-2 items-center m-0">
+    <View className="flex-row mx-2 p-2 items-center shadow-md bg-white rounded-md border-accent border-2">
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
-        const label = options.title !== undefined ? options.title : route.name;
         const tabBarIcon = options?.tabBarIcon;
         const isFocused = state.index === index;
 
