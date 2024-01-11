@@ -1,9 +1,6 @@
 import { Text, View } from 'react-native';
+import { GroceriesTemplate } from '../../../components/templates/GroceriesTemplate';
 
 export default function HomePage() {
-  return (
-    <View style={{ flex: 1 }}>
-      <Text>Index page of Home Tab</Text>
-    </View>
-  );
+  return <GroceriesTemplate />;
 }

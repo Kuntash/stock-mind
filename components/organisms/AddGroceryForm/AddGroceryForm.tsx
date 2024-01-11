@@ -1,6 +1,7 @@
+import 'react-native-get-random-values';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { format } from 'date-fns';
+import { addDays, format, subDays } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -8,34 +9,78 @@ import { UnitDropDown } from '../../templates/AddGroceryTemplate/UnitDropDown';
 import { TAILWIND_THEME } from '../../../theme';
 import { Toast } from '../../atoms/Toast';
 import { scheduleNotifications } from '../../../utils/notifications';
-import { useDatabaseContext } from '../../../contexts/databaseContext/databaseContext';
+import { v4 as uuidv4 } from 'uuid';
+import { Grocery, useGroceryAtom } from '../../../globalState/groceryAtom';
+import { addGroceryToStorage } from '../../../utils/storage';
+import { useUserPreferenceAtomValue } from '../../../globalState/userPreferenceAtom';
 
 export const AddGroceryForm = () => {
-  const { db } = useDatabaseContext();
+  const userPreferenceValue = useUserPreferenceAtomValue();
+  const [groceryAtom, setGroceryAtom] = useGroceryAtom();
   const [groceryName, setGroceryName] = useState<string | undefined>();
-  const [groceryUnit, setGroceryUnit] = useState<string | null>(null);
+  const [groceryUnit, setGroceryUnit] = useState<
+    'pieces' | 'litres' | 'kgs' | null
+  >(null);
   const [groceryQuantity, setGroceryQuantity] = useState<string>('0');
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [groceryExpiryDate, setGroceryExpiryDate] = useState<Date>(new Date());
+  const [groceryExpiryDate, setGroceryExpiryDate] = useState<Date>(
+    addDays(new Date(), userPreferenceValue.notifyBefore)
+  );
 
   const [hideAddGrocerySuccessToast, setHideAddGrocerySuccessToast] =
-    useState<boolean>(false);
+    useState<boolean>(true);
 
   const handleAddGrocery = async () => {
-    /* store the data in sqlite db */
-    
-    /* retreive user preference */
+    /* validation */
+    if (
+      !groceryName ||
+      !groceryExpiryDate ||
+      !groceryQuantity ||
+      !groceryUnit
+    ) {
+      // TODO: error toast
+      return null;
+    }
+
+    const id = uuidv4();
+    const newGrocery: Grocery = {
+      id,
+      name: groceryName,
+      expiryDate: groceryExpiryDate,
+      quantity: Number(groceryQuantity),
+      unit: groceryUnit,
+    };
+
+    /* store the data in async storage */
+    await addGroceryToStorage([...groceryAtom, newGrocery]);
+
+    /* modify the jotai atom */
+    setGroceryAtom([...groceryAtom, newGrocery]);
+
+    /* retrieve user preference */
+    const { notifyBefore } = userPreferenceValue;
 
     /* schedule notifications */
 
-    /* toast */
+    const scheduledDate = subDays(groceryExpiryDate, notifyBefore);
+    await scheduleNotifications(
+      scheduledDate,
+      `${groceryName} will get expired in ${notifyBefore} ${
+        notifyBefore > 1 ? 'days' : 'day'
+      }`
+    );
 
-    /* reset the form */
-    scheduleNotifications(groceryExpiryDate);
+    /* toast */
     setHideAddGrocerySuccessToast(false);
     setTimeout(() => {
       setHideAddGrocerySuccessToast(true);
     }, 3000);
+
+    /* reset the form */
+    setGroceryName(undefined);
+    setGroceryQuantity('0');
+    setGroceryExpiryDate(new Date());
+    setGroceryUnit(null);
   };
 
   return (
@@ -50,7 +95,6 @@ export const AddGroceryForm = () => {
           onChangeText={(text) => {
             setGroceryName(text);
           }}
-          selectionColor="735bec"
           className="w-full h-12 shadow-md bg-white border-accent border-2 rounded-md py-0 px-2 text-base font-poppinsSemiBold text-text"
           placeholder="Potato, Eggplant etc"
         />
@@ -82,7 +126,7 @@ export const AddGroceryForm = () => {
             <UnitDropDown
               value={groceryUnit}
               onChange={(changedUnit) => {
-                setGroceryUnit(changedUnit);
+                setGroceryUnit(changedUnit as Grocery['unit']);
               }}
             />
           </View>
@@ -107,6 +151,10 @@ export const AddGroceryForm = () => {
         {isDatePickerOpen && (
           <View>
             <DateTimePicker
+              minimumDate={addDays(
+                new Date(),
+                userPreferenceValue.notifyBefore
+              )}
               value={groceryExpiryDate}
               display="spinner"
               mode="date"

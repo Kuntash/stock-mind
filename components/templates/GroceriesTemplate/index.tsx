@@ -1,0 +1,1 @@
+export { GroceriesTemplate } from './GroceriesTemplate';

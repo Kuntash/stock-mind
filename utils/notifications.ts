@@ -40,11 +40,11 @@ export const registerForPushNotificationsAsync = async () => {
   return token;
 };
 
-export const scheduleNotifications = async (date: Date) => {
+export const scheduleNotifications = async (date: Date, title: string) => {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Practice notification',
+      title,
     },
-    trigger: null,
+    trigger: date,
   });
 };

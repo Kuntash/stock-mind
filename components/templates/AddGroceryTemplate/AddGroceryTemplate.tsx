@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { AddGroceryForm } from '../../organisms/AddGroceryForm';
 
 export const AddGroceryTemplate = () => {

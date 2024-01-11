@@ -1,11 +1,9 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { clsx } from 'clsx';
 import React from 'react';
 
 export const TabBar = (props: BottomTabBarProps) => {
   const { descriptors, navigation, state, insets } = props;
-  console.log('🚀 ~ file: TabBar.tsx:8 ~ TabBar ~ insets:', insets);
   return (
     <View className="flex-row mx-2 p-2 items-center shadow-md bg-white rounded-md border-accent border-2">
       {state.routes.map((route, index) => {
