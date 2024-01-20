@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useMemo, useState } from 'react';
 import { updateUserPreferences } from '../../../utils/storage';
 import { Toast } from '../../atoms/Toast';
+
 export const PreferenceTemplate = () => {
   const [userPreference, setUserPreferenceAtom] = useUserPreferenceAtom();
   const [hideToast, setHideToast] = useState(true);
@@ -42,9 +43,15 @@ export const PreferenceTemplate = () => {
         )}
       >
         {/* notify before how many days input */}
-        <View className="flex flex-row items-center mb-4 justify-between">
-          <Text className={'font-poppinsBold mr-2 text-lg'}>Notify before</Text>
-          <View className={'flex flex-row items-center'}>
+        <View className="flex flex-row items-center justify-between flex-wrap">
+          <View className="flex flex-shrink">
+            <View>
+              <Text className={'font-poppinsBold mr-2 text-lg'}>
+                Notify before
+              </Text>
+            </View>
+          </View>
+          <View className={'flex flex-row items-center flex-shrink-0'}>
             {/* Minus days button */}
             <View className="mr-2">
               <MotiPressable
@@ -98,32 +105,9 @@ export const PreferenceTemplate = () => {
             </View>
           </View>
         </View>
-
-        {/* Should delete items after getting expired */}
-        <View className="flex flex-row items-center">
-          <Text className={'font-poppinsBold mr-2'}>
-            Delete grocery after getting expired
-          </Text>
-          <View className={'flex-grow h-[2px] bg-accent'} />
-          <View className={'flex'}>
-            {/* Minus days button */}
-            <MotiPressable>
-              <View></View>
-            </MotiPressable>
-            {/* Days value */}
-
-            <Text className="font-poppinsBold">
-              {userPreference?.notifyBefore}
-            </Text>
-            {/* Add button */}
-            <MotiPressable>
-              <View></View>
-            </MotiPressable>
-          </View>
-        </View>
       </View>
 
-      <Toast hidden={hideToast} label={toastLabel} />
+      <Toast hidden={hideToast} label={toastLabel} variant="danger" />
     </View>
   );
 };

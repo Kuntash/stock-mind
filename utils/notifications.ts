@@ -41,7 +41,7 @@ export const registerForPushNotificationsAsync = async () => {
 };
 
 export const scheduleNotifications = async (date: Date, title: string) => {
-  await Notifications.scheduleNotificationAsync({
+  return await Notifications.scheduleNotificationAsync({
     content: {
       title,
     },

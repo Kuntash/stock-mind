@@ -6,6 +6,7 @@ export type Grocery = {
   expiryDate: Date;
   quantity: number;
   unit: 'pieces' | 'litres' | 'kgs';
+  notificationId?: string;
 };
 
 const groceryAtom = atom<Grocery[]>([]);

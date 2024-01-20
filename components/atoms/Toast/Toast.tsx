@@ -5,7 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TAILWIND_THEME } from '../../../theme';
 
 export const Toast = (props: ToastProps) => {
-  const { hidden, label } = props;
+  const { hidden, label, variant } = props;
+
   if (hidden) return null;
 
   return (
@@ -18,7 +19,7 @@ export const Toast = (props: ToastProps) => {
       }}
       className={clsx(
         'absolute',
-        'bg-accent',
+        variant === 'success' ? 'bg-accent' : 'bg-danger',
         'p-2',
         'rounded-md',
         'shadow-md',
