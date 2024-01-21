@@ -6,15 +6,18 @@ import { Fragment } from 'react';
 
 export const GroceriesTemplate = () => {
   const groceryAtom = useGroceryAtomValue();
-  console.log(
-    '🚀 ~ file: GroceriesTemplate.tsx:7 ~ GroceriesTemplate ~ groceryAtom:',
-    groceryAtom
-  );
+
   return (
     <View className={clsx('flex-1 bg-white px-2 flex')}>
       {/* Grocery list */}
 
-      <ScrollView className={clsx('pb-2')}>
+      <ScrollView
+        className={clsx('pb-2')}
+        contentContainerStyle={{
+          display: 'flex',
+          height: '100%',
+        }}
+      >
         {/* Your Groceries title */}
         <View className="mb-4">
           <Text className={clsx('font-poppinsBold text-4xl pt-4 text-accent')}>
@@ -31,15 +34,25 @@ export const GroceriesTemplate = () => {
           ))}
         </View>
 
-        <View className={clsx('flex flex-row items-center justify-center')}>
-          <View className={clsx('w-[40%] h-[1px] bg-accent rounded-full')} />
-          <View className={clsx('w-[20%]')}>
+        {groceryAtom?.length > 0 ? (
+          <View className={clsx('flex flex-row items-center justify-center')}>
+            <View className={clsx('w-[40%] h-[1px] bg-accent rounded-full')} />
+            <View className={clsx('w-[20%]')}>
+              <Text
+                className={clsx('font-poppinsBold text-accent text-center')}
+              >
+                That is all
+              </Text>
+            </View>
+            <View className={clsx('w-[40%] h-[1px] bg-accent rounded-full')} />
+          </View>
+        ) : (
+          <View className="flex-grow flex justify-center">
             <Text className={clsx('font-poppinsBold text-accent text-center')}>
-              That is all
+              Add groceries 😊😊😊
             </Text>
           </View>
-          <View className={clsx('w-[40%] h-[1px] bg-accent rounded-full')} />
-        </View>
+        )}
       </ScrollView>
     </View>
   );

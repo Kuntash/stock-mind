@@ -11,6 +11,7 @@ export const GroceryItem = (props: GroceryItemProps) => {
   const { grocery } = props;
   const handleOnPress = () => {
     /* redirect to edit grocery page */
+    router.push(`/(tabs)/add-grocery/${grocery?.id}`);
   };
 
   return (

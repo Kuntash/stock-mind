@@ -1,0 +1,1 @@
+export { PreferenceTemplate } from './PreferenceTemplate';

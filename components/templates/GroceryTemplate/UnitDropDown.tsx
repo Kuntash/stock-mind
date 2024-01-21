@@ -31,7 +31,7 @@ export const UnitDropDown = (props: UnitDropDownProps) => {
           </TouchableOpacity>
         </View>
         {isDropDownVisible && (
-          <ScrollView className="absolute top-[110%] left-[-50%] bg-white shadow-md p-2 flex rounded-md w-16">
+          <ScrollView className="absolute top-[110%] left-[-50%] bg-white shadow-lg p-2 flex rounded-md w-16">
             {UNITS?.map((unit, index) => (
               <Fragment key={unit}>
                 <TouchableOpacity

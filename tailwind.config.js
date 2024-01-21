@@ -10,6 +10,7 @@ module.exports = {
         primary: '#1bb5e4',
         secondary: '#8895f1',
         accent: '#735bec',
+        danger: '#dc2626',
       },
       fontFamily: {
         poppinsLight: ['poppinsLight'],

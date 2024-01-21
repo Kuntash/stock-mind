@@ -5,12 +5,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TAILWIND_THEME } from '../../../theme';
 
 export const Toast = (props: ToastProps) => {
-  const { hidden, label } = props;
+  const { hidden, label, variant } = props;
+
   if (hidden) return null;
 
   return (
     <MotiView
-      from={{ opacity: 0, scale: 0, bottom: 10, right: 0 }}
+      from={{ opacity: 0, scale: 0, bottom: 10, right: 10 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'timing' }}
       style={{
@@ -18,7 +19,7 @@ export const Toast = (props: ToastProps) => {
       }}
       className={clsx(
         'absolute',
-        'bg-accent',
+        variant === 'success' ? 'bg-accent' : 'bg-danger',
         'p-2',
         'rounded-md',
         'shadow-md',

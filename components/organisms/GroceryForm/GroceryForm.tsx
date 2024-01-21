@@ -1,11 +1,11 @@
 import 'react-native-get-random-values';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { addDays, format, subDays } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { UnitDropDown } from '../../templates/AddGroceryTemplate/UnitDropDown';
+import { UnitDropDown } from '../../templates/GroceryTemplate/UnitDropDown';
 import { TAILWIND_THEME } from '../../../theme';
 import { Toast } from '../../atoms/Toast';
 import { scheduleNotifications } from '../../../utils/notifications';
@@ -13,22 +13,53 @@ import { v4 as uuidv4 } from 'uuid';
 import { Grocery, useGroceryAtom } from '../../../globalState/groceryAtom';
 import { addGroceryToStorage } from '../../../utils/storage';
 import { useUserPreferenceAtomValue } from '../../../globalState/userPreferenceAtom';
+import { GroceryFormProps } from './types';
+import { useLocalSearchParams } from 'expo-router';
+import { ToastProps } from '../../atoms/Toast/type';
+import { cancelScheduledNotificationAsync } from 'expo-notifications';
 
-export const AddGroceryForm = () => {
+export const GroceryForm = (props: GroceryFormProps) => {
+  const { type } = props;
+
+  /* grocery id when type is edit */
+  const local = useLocalSearchParams();
+  const { groceryId } = local ?? {};
+
   const userPreferenceValue = useUserPreferenceAtomValue();
   const [groceryAtom, setGroceryAtom] = useGroceryAtom();
-  const [groceryName, setGroceryName] = useState<string | undefined>();
-  const [groceryUnit, setGroceryUnit] = useState<
-    'pieces' | 'litres' | 'kgs' | null
-  >(null);
-  const [groceryQuantity, setGroceryQuantity] = useState<string>('0');
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [groceryExpiryDate, setGroceryExpiryDate] = useState<Date>(
-    addDays(new Date(), userPreferenceValue.notifyBefore)
+
+  /* grocery that needs to be edited */
+  const editGrocery: Grocery | null = useMemo(() => {
+    const temp = groceryAtom.find((grocery) => grocery?.id === groceryId);
+    if (temp) return temp;
+    return null;
+  }, [groceryAtom]);
+  console.log(
+    '🚀 ~ file: GroceryForm.tsx:35 ~ consteditGrocery:Grocery|null=useMemo ~ editGrocery:',
+    editGrocery
   );
 
-  const [hideAddGrocerySuccessToast, setHideAddGrocerySuccessToast] =
-    useState<boolean>(true);
+  const [groceryName, setGroceryName] = useState<string | undefined>(
+    editGrocery?.name ? editGrocery?.name : undefined
+  );
+  const [groceryUnit, setGroceryUnit] = useState<
+    'pieces' | 'litres' | 'kgs' | null
+  >(editGrocery?.unit ? editGrocery.unit : null);
+  const [groceryQuantity, setGroceryQuantity] = useState<string>(
+    editGrocery?.quantity ? String(editGrocery?.quantity) : '0'
+  );
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [groceryExpiryDate, setGroceryExpiryDate] = useState<Date>(
+    editGrocery?.expiryDate
+      ? editGrocery?.expiryDate
+      : addDays(new Date(), userPreferenceValue.notifyBefore)
+  );
+
+  const [toastData, setToastData] = useState<ToastProps>({
+    hidden: true,
+    label: 'Default notification',
+    variant: 'success',
+  });
 
   const handleAddGrocery = async () => {
     /* validation */
@@ -38,7 +69,15 @@ export const AddGroceryForm = () => {
       !groceryQuantity ||
       !groceryUnit
     ) {
-      // TODO: error toast
+      setToastData({
+        hidden: false,
+        variant: 'danger',
+        label: 'Please fill all the data',
+      });
+
+      setTimeout(() => {
+        setToastData((previous) => ({ ...previous, hidden: true }));
+      }, 3000);
       return null;
     }
 
@@ -71,9 +110,17 @@ export const AddGroceryForm = () => {
     );
 
     /* toast */
-    setHideAddGrocerySuccessToast(false);
+
+    setToastData({
+      hidden: false,
+      label: 'Grocery successfully added',
+      variant: 'success',
+    });
     setTimeout(() => {
-      setHideAddGrocerySuccessToast(true);
+      setToastData((previous) => ({
+        ...previous,
+        hidden: true,
+      }));
     }, 3000);
 
     /* reset the form */
@@ -81,6 +128,65 @@ export const AddGroceryForm = () => {
     setGroceryQuantity('0');
     setGroceryExpiryDate(new Date());
     setGroceryUnit(null);
+  };
+
+  const handleEditGrocery = async () => {
+    /* validation */
+    if (
+      !groceryName ||
+      !groceryExpiryDate ||
+      !groceryQuantity ||
+      !groceryUnit
+    ) {
+      setToastData({
+        hidden: false,
+        variant: 'danger',
+        label: 'Please fill all the data',
+      });
+
+      setTimeout(() => {
+        setToastData((previous) => ({ ...previous, hidden: true }));
+      }, 3000);
+      return null;
+    }
+
+    /* retrieve user preference */
+    const { notifyBefore } = userPreferenceValue;
+
+    /* schedule notifications */
+
+    const scheduledDate = subDays(groceryExpiryDate, notifyBefore);
+    const notificationId = await scheduleNotifications(
+      scheduledDate,
+      `${groceryName} will get expired in ${notifyBefore} ${
+        notifyBefore > 1 ? 'days' : 'day'
+      }`
+    );
+
+    await cancelScheduledNotificationAsync(
+      editGrocery?.notificationId as string
+    );
+
+    const newGrocery: Grocery = {
+      id: editGrocery?.id as string,
+      name: groceryName,
+      expiryDate: groceryExpiryDate,
+      quantity: Number(groceryQuantity),
+      unit: groceryUnit,
+      notificationId,
+    };
+
+    /* modify the jotai atom */
+    const changedGroceries = groceryAtom.map((grocery) => {
+      if (grocery?.id === newGrocery?.id) return newGrocery;
+      return grocery;
+    });
+    setGroceryAtom(changedGroceries);
+
+    /* store the data in async storage */
+    await addGroceryToStorage(changedGroceries);
+
+    /* cancel previous notfication */
   };
 
   return (
@@ -181,7 +287,10 @@ export const AddGroceryForm = () => {
       <View>
         <TouchableOpacity
           className="bg-accent p-3 flex flex-row items-center rounded-md justify-center"
-          onPress={handleAddGrocery}
+          onPress={() => {
+            if (type === 'edit') handleEditGrocery();
+            else handleAddGrocery();
+          }}
         >
           <View className="mr-2">
             <MaterialIcons
@@ -190,13 +299,16 @@ export const AddGroceryForm = () => {
               color={TAILWIND_THEME?.theme?.colors?.background as string}
             />
           </View>
-          <Text className="text-background font-poppinsSemiBold">Confirm</Text>
+          <Text className="text-background font-poppinsSemiBold">
+            {type === 'edit' ? 'Save' : 'Confirm'}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <Toast
-        hidden={hideAddGrocerySuccessToast}
-        label="Grocery successfully added"
+        hidden={!!toastData?.hidden}
+        label={toastData?.label}
+        variant={toastData?.variant}
       />
     </View>
   );

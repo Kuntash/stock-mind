@@ -1,5 +1,5 @@
 {
-  "scheme": "stock-mind-scheme",
+  "scheme": "io.stockmind",
   "expo": {
     "name": "stock-mind",
     "slug": "stock-mind",
@@ -14,7 +14,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "io.stockmind"
     },
     "android": {
       "adaptiveIcon": {
