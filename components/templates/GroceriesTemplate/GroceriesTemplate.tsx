@@ -6,10 +6,7 @@ import { Fragment } from 'react';
 
 export const GroceriesTemplate = () => {
   const groceryAtom = useGroceryAtomValue();
-  console.log(
-    '🚀 ~ file: GroceriesTemplate.tsx:7 ~ GroceriesTemplate ~ groceryAtom:',
-    groceryAtom
-  );
+
   return (
     <View className={clsx('flex-1 bg-white px-2 flex')}>
       {/* Grocery list */}

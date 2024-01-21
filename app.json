@@ -1,5 +1,5 @@
 {
-  "scheme": "stock-mind-scheme",
+  "scheme": "io.stockmind",
   "expo": {
     "name": "stock-mind",
     "slug": "stock-mind",
@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "io.stockmind"
@@ -34,9 +32,7 @@
       }
     },
     "owner": "kun_tash",
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
     }
